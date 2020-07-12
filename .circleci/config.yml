@@ -1,0 +1,53 @@
+version: 2.1
+
+jobs:
+  test:
+    docker:
+      - image: cimg/clojure:1.10.1
+    steps:
+      - checkout
+      - restore_cache:
+          keys:
+           - lein-deps-cache-{{ checksum "project.clj" }}
+           - lein-deps-cache-
+      - run: lein test
+      - save_cache:
+          key: lein-deps-cache-{{ checksum "project.clj" }}
+          paths:
+            - ~/.m2/repository
+      - persist_to_workspace:
+          root: ~/
+          paths:
+            - .m2
+            - project
+
+  build:
+    docker:
+      - image: cimg/clojure:1.10.1
+    environment:
+      DISPLAY: :0
+    steps:
+      - attach_workspace:
+          at: ~/
+      - run:
+          name: Install systems dependencies
+          command: |
+            sudo apt update
+            sudo apt install -y libxrender1 libxtst6 libxi6 xvfb
+      - run: 
+          name: Build Uberjar
+          command: xvfb-run lein uberjar
+      - run:
+          name: Remove extra build files
+          command: rm -rf target/uberjar/classes target/uberjar/stale
+      - store_artifacts:
+          path: target/uberjar
+          destination: target
+
+workflows:
+  test-and-build:
+    jobs:
+      - test
+      - build:
+          requires:
+            - test
