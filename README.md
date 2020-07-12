@@ -25,7 +25,7 @@ running the following command:
 
 ## Demo
 
-[![YouTube Link](https://img.youtube.com/vi/ZgzvGNp4C0w/0.jpg)](https://www.youtube.com/watch?v=ZgzvGNp4C0w)
+[REPLNote Demo - YouTube](https://www.youtube.com/watch?v=ZgzvGNp4C0w)
 
 ## License
 
